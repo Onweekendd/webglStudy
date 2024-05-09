@@ -1,6 +1,7 @@
 import vertexShader from "./shaders/vertex.vs.glsl";
 import fragmentShader from "./shaders/fragment.fs.glsl";
 import initShaders from "../../libs/initShader";
+import { vec4, mat4 } from "gl-matrix";
 export default function main() {
   const canvas = document.getElementById("gl-canvas") as HTMLCanvasElement;
   const gl = canvas.getContext("webgl") as WebGLRenderingContext;
@@ -24,7 +25,7 @@ export default function main() {
 
   gl.drawArrays(gl.TRIANGLES, 0, pointList.length);
 
-  rotate(90);
+  rotate(120);
   translate([0.0, 0.0]);
   function initVertexBuffers(pointList: [number, number][]) {
     // 使用缓冲区批量传递顶点数据
@@ -60,27 +61,9 @@ export default function main() {
   function rotate(angle: number) {
     const theta = (angle * Math.PI) / 180;
 
-    const cos = Math.cos(theta);
-    const sin = Math.sin(theta);
-
-    const xformMatrix = new Float32Array([
-      cos,
-      sin,
-      0.0,
-      0.0,
-      -sin,
-      cos,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-      0.0,
-      0.0,
-      0.0,
-      0.0,
-      1.0,
-    ]);
+    const xformMatrix = mat4.create();
+    mat4.rotateZ(xformMatrix, xformMatrix, theta);
+    console.log(xformMatrix);
 
     gl.uniformMatrix4fv(u_xformMatrix, false, xformMatrix);
 
