@@ -16,8 +16,8 @@ export default function main() {
   ];
   const buffer = initVertexBuffers(pointList);
   const u_Translation = gl.getUniformLocation(program, "u_Translation");
-  const u_Cos = gl.getUniformLocation(program, "u_Cos");
-  const u_Sin = gl.getUniformLocation(program, "u_Sin");
+  // 绕z轴旋转矩阵
+  const u_xformMatrix = gl.getUniformLocation(program, "u_xformMatrix");
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   // 清空背景颜色缓冲区（即填充背影颜色）
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -62,10 +62,27 @@ export default function main() {
 
     const cos = Math.cos(theta);
     const sin = Math.sin(theta);
-    console.log(cos, sin);
 
-    gl.uniform1f(u_Cos, cos);
-    gl.uniform1f(u_Sin, sin);
+    const xformMatrix = new Float32Array([
+      cos,
+      sin,
+      0.0,
+      0.0,
+      -sin,
+      cos,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+    ]);
+
+    gl.uniformMatrix4fv(u_xformMatrix, false, xformMatrix);
 
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.drawArrays(gl.TRIANGLES, 0, pointList.length);
