@@ -10,18 +10,22 @@ export default function main() {
     return;
   }
   const pointList: [number, number][] = [
-    [-0.5, 0.5],
-    [-0.5, -0.5],
-    [0.5, 0.5],
+    [0, 0.5],
     [0.5, -0.5],
+    [-0.5, -0.5],
   ];
   const buffer = initVertexBuffers(pointList);
+  const u_Translation = gl.getUniformLocation(program, "u_Translation");
+  const u_Cos = gl.getUniformLocation(program, "u_Cos");
+  const u_Sin = gl.getUniformLocation(program, "u_Sin");
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   // 清空背景颜色缓冲区（即填充背影颜色）
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  gl.drawArrays(gl.TRIANGLE_STRIP, 0, pointList.length);
+  gl.drawArrays(gl.TRIANGLES, 0, pointList.length);
 
+  rotate(90);
+  translate([0.0, 0.0]);
   function initVertexBuffers(pointList: [number, number][]) {
     // 使用缓冲区批量传递顶点数据
     const vertices = new Float32Array(pointList.flat(1));
@@ -47,6 +51,24 @@ export default function main() {
     gl.enableVertexAttribArray(a_Position);
 
     return vertexBuffer;
+  }
+  function translate(translation: [number, number]) {
+    gl.uniform4f(u_Translation, translation[0], translation[1], 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, pointList.length);
+  }
+  function rotate(angle: number) {
+    const theta = (angle * Math.PI) / 180;
+
+    const cos = Math.cos(theta);
+    const sin = Math.sin(theta);
+    console.log(cos, sin);
+
+    gl.uniform1f(u_Cos, cos);
+    gl.uniform1f(u_Sin, sin);
+
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, pointList.length);
   }
 }
 
